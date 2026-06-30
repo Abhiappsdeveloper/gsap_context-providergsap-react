@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Context Provider - GSAP &amp; React</title>
+    <link rel='stylesheet' href='https://codepen.io/GreenSock/pen/xxmzBrw.css'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/pretty-checkbox/3.0.3/pretty-checkbox.min.css'>
+    <style>
+        .app {
+            padding: 10px;
+        }
+
+        .box {
+            margin: 10px 0;
+        }
+
+        label {
+            display: block;
+        }
+
+        .menu {
+            display: flex;
+        }
+
+        .menu>label {
+            margin: 0.5rem 1rem;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="root" class="panel center"></div>
+    <script src='https://codepen.io/GreenSock/pen/NWoLXRG.js'></script>
+    <script>
+        import React, {
+            useEffect,
+            useLayoutEffect,
+            useRef,
+            useState,
+            useContext,
+            createContext
+        } from
+            "https://esm.sh/react@19.1.0";
+        import ReactDOM from "https://esm.sh/react-dom@19.1.0/client";
+
+        import gsap from "https://esm.sh/gsap";
+        import { useGSAP } from "https://esm.sh/@gsap/react?deps=react@19.1.0";
+
+        gsap.registerPlugin(useGSAP);
+
+        // React Context - not GSAP Context
+        const SelectedContext = createContext();
+
+        function Box({ children, id }) {
+            const el = useRef();
+            // React Context - not GSAP Context
+            const { selected } = useContext(SelectedContext);
+
+            useGSAP(() => {
+                gsap.to(el.current, {
+                    x: selected === id ? 200 : 0
+                });
+
+            }, [selected, id]);
+
+            return /*#__PURE__*/(
+                React.createElement("div", { className: "box gradient-blue", ref: el },
+                    children));
+
+
+        }
+
+        function Boxes() {
+            return /*#__PURE__*/(
+                React.createElement("div", { className: "boxes" }, /*#__PURE__*/
+                    React.createElement(Box, { id: "1" }, "Box 1"), /*#__PURE__*/
+                    React.createElement(Box, { id: "2" }, "Box 2"), /*#__PURE__*/
+                    React.createElement(Box, { id: "3" }, "Box 3")));
+
+
+        }
+
+        function Menu() {
+            // React Context - not GSAP Context
+            const { selected, setSelected } = useContext(SelectedContext);
+
+            const onChange = e => {
+                setSelected(e.target.value);
+            };
+
+            return /*#__PURE__*/(
+                React.createElement("div", { className: "menu" }, /*#__PURE__*/
+                    React.createElement("label", null, /*#__PURE__*/
+                        React.createElement("input", {
+                            onChange: onChange,
+                            checked: selected === "1",
+                            type: "radio",
+                            value: "1",
+                            name: "selcted"
+                        }),
+                        " ", "Box 1"), /*#__PURE__*/
+
+
+                    React.createElement("label", null, /*#__PURE__*/
+                        React.createElement("input", {
+                            onChange: onChange,
+                            checked: selected === "2",
+                            type: "radio",
+                            value: "2",
+                            name: "selcted"
+                        }),
+                        " ", "Box 2"), /*#__PURE__*/
+
+
+                    React.createElement("label", null, /*#__PURE__*/
+                        React.createElement("input", {
+                            onChange: onChange,
+                            checked: selected === "3",
+                            type: "radio",
+                            value: "3",
+                            name: "selcted"
+                        }),
+                        " ", "Box 3")));
+
+
+
+
+        }
+
+        function App() {
+            const [selected, setSelected] = useState("2");
+
+            return /*#__PURE__*/(
+                React.createElement("div", { className: "app" }, /*#__PURE__*/
+                    React.createElement(SelectedContext.Provider, { value: { selected, setSelected } }, /*#__PURE__*/
+                        React.createElement(Menu, null), /*#__PURE__*/
+                        React.createElement(Boxes, null))));
+
+
+
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render( /*#__PURE__*/React.createElement(App, null));
+    </script>
+
+</body>
+
+</html>
